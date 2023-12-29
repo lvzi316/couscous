@@ -19,3 +19,14 @@ git log --author="author@email.com" --pretty=tformat: --numstat --since "1 year"
 
 # aggregate all the changes from everyone
 cat perauthorchanges.txt | awk '{total+=$10} END {print total}'
+
+# show the history of one file, simple and complete infor
+git log --oneline /filepath
+git log --stat /filepath
+
+# This command will print the total number of lines in your Git repository. Please note that this command should be run in the root directory of your Git repository.
+# If you want to count the number of lines in files of a specific type, you can add a grep command. 
+git ls-files | grep "\\.js$" | xargs cat | wc -l
+
+# List the last 5 commits on the current branch
+git log -5 --pretty=format:"%h - %an, %ad : %s"
