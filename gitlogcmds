@@ -1,0 +1,18 @@
+#!/bin/bash
+# get all the commits from all the author in a repo within last year
+git shortlog -sne --since "1 year" --no-merges
+
+# list all the commits from one author, and aggreated changes like below
+# 1 file changed, 3 insertions(+), 7 deletions(-)
+# 1 file changed, 1 insertion(+), 2 deletions(-)
+# 39 files changed, 279 insertions(+), 16 deletions(-)
+# other parameters can be tried are --stat --compact-summary 
+git log --author="author@email.com" --pretty=tformat: --shortstat --since "1 year" | sort -k1 -nr
+
+# list all the changed files from one author, order by the number of add lines descending and take top 10 records
+# 33713   0       microsoft/common/src/test/resources/mock_DI_sit_api_response.json
+# 773     0       intg/src/main/resources/DlpWithCustomSITMockResponse.json
+# 733     0       repository/src/test/resources/json/sit/customSITMockResponse2.json
+# 697     0       intg/src/main/resources/customSITMockResponse.json
+# 681     0       model-test-framework/src/test/resources/models/4011-powerbi-remove-capacity/14_0_powerbi.json
+git log --author="author@email.com" --pretty=tformat: --numstat --since "1 year" | sort -k1 -nr | head -n 10

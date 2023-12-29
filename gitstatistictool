@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Define start and end dates
+start_date='2023-01-01'
+end_date='2023-12-31'
+
+git shortlog -sne --no-merges --since=$start_date --until=$end_date >> commitperauthor.txt
+
+# Get a list of all authors (use email as unique identifier)
+authors=$(git log --format='%aN <%aE>' | awk -F'<|>' '{print $2}' | sort -u)
+
+# Loop over all authors
+for author in $authors
+do
+    # Get the number of lines added and deleted by this author within the date range
+    # git log --author="$author" --pretty=tformat: --numstat --since=$start_date --until=$end_date | awk -v author="$author" '{ add += $1; subs += $2; loc += $1 + $2; commits += 1 } END { if (add != 0 || subs != 0 || loc != 0) printf "%s commits %s added_lines %s removed_lines %s total_lines %s\n", author, commits, add, subs, loc }'
+    git log --author="$author" --pretty=tformat: --shortstat  --since=$start_date --until=$end_date | awk -v author="$author" '{ file_changed += $1; add+= $4; subs += ($6 ? $6 : 0); loc += $4 + ($6 ? $6 : 0); commits++ } END { if (add != 0 || subs != 0 || loc != 0) printf "%s commits %s file_changed %s added_lines %s removed_lines %s total_lines %s\n", author, commits, file_changed, add, subs, loc }'
+done | sort -k11 -nr >> changeperauthor.txt
+
+mkdir authordata
+# Loop over all authors
+for author in $authors
+do
+    # Get the number of lines added and deleted by this author within the date range
+    # git log --author="$author" --pretty=tformat: --numstat --since=$start_date --until=$end_date | awk -v author="$author" '{ add += $1; subs += $2; loc += $1 + $2; commits += 1 } END { if (add != 0 || subs != 0 || loc != 0) printf "%s commits %s added_lines %s removed_lines %s total_lines %s\n", author, commits, add, subs, loc }'
+    # git log --author="$author" --pretty=tformat: --shortstat  --since=$start_date --until=$end_date | awk -v author="$author" '{ file_changed += $1; add+= $4; subs += ($6 ? $6 : 0); loc += $4 + ($6 ? $6 : 0); commits++ } END { if (add != 0 || subs != 0 || loc != 0) printf "%s commits %s file_changed %s added_lines %s removed_lines %s total_lines %s\n", author, commits, file_changed, add, subs, loc }'
+    ##done | sort -k11 -nr
+    echo "Author: $author"
+    git log --author="$author" --pretty=tformat: --numstat --since=$start_date --until=$end_date | sort -k1 -nr >> "./authordata/$author.csv"
+done
+
+echo "delete empty files"
+find ./authordata -type f -empty -delete
