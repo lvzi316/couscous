@@ -44,13 +44,11 @@ jobs:
           const prs = response.data;
           console.log('Fetched pull requests:', prs); // Print the raw pull requests data
           const prList = prs.map(pr => `#${pr.number} - ${pr.title} by ${pr.user.login} - ${pr.html_url}`).join('\n');
- 
           console.log('Formatted pull request list:', prList);
           fs.writeFileSync('pr_list.txt', prList);
 
-          // Set the output for the GitHub Actions step
-          const outputPath = process.env.GITHUB_OUTPUT;
-          fs.appendFileSync(outputPath, `pr_list=${prList}\n`);
+          // Set the output for the GitHub Actions step using GITHUB_ENV
+          fs.appendFileSync(process.env.GITHUB_ENV, `PR_LIST<<EOF\n${prList}\nEOF\n`);
         })
         .catch(error => {
           console.error('Error fetching pull requests:', error);
@@ -75,7 +73,7 @@ jobs:
         body: |
           Here are the pull requests from the last week:
 
-          ${{ steps.fetch_prs.outputs.pr_list }}
+          ${{ env.PR_LIST }}
         to: 'chaopan@outlook.com'
         from: 'chaopanultra@gmail.com'
         content_type: 'text/plain'
