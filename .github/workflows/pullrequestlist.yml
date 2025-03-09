@@ -42,6 +42,7 @@ jobs:
         })
         .then(response => {
           const prs = response.data;
+          console.log('Fetched pull requests:', prs); // Print the raw pull requests data
           const prList = prs.map(pr => `#${pr.number} - ${pr.title} by ${pr.user.login}`).join('\n');
           console.log('Formatted pull request list:', prList);
           fs.writeFileSync('pr_list.txt', prList);
