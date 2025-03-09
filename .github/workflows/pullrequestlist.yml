@@ -43,12 +43,13 @@ jobs:
         .then(response => {
           const prs = response.data;
           console.log('Fetched pull requests:', prs); // Print the raw pull requests data
-          const prList = prs.map(pr => `#${pr.number} - ${pr.title} by ${pr.user.login}`).join('\n');
+          const prList = prs.map(pr => `#${pr.number} - ${pr.title} by ${pr.user.login} - ${pr.html_url}`).join('\n');
           console.log('Formatted pull request list:', prList);
           fs.writeFileSync('pr_list.txt', prList);
 
           // Set the output for the GitHub Actions step
-          console.log(`::set-output name=pr_list::${prList}`);
+          const outputPath = process.env.GITHUB_OUTPUT;
+          fs.appendFileSync(outputPath, `pr_list=${prList}\n`);
         })
         .catch(error => {
           console.error('Error fetching pull requests:', error);
