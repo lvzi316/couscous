@@ -32,6 +32,9 @@ jobs:
         const repo = process.env.GITHUB_REPOSITORY;
         const token = process.env.GITHUB_TOKEN;
 
+        console.log('Fetching pull requests from repository:', repo);
+        console.log('Since date:', since);
+
         axios.get(`https://api.github.com/repos/${repo}/pulls?state=all&since=${since}`, {
           headers: {
             Authorization: `token ${token}`
@@ -40,6 +43,7 @@ jobs:
         .then(response => {
           const prs = response.data;
           const prList = prs.map(pr => `#${pr.number} - ${pr.title} by ${pr.user.login}`).join('\n');
+          console.log('Formatted pull request list:', prList);
           fs.writeFileSync('pr_list.txt', prList);
         })
         .catch(error => {
